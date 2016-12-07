@@ -1,0 +1,55 @@
+{
+  "name": "better-youtube",
+  "version": "0.0.1",
+  "description": "React+Typescript+Wallaby attempt",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watch",
+    "sync": "browser-sync start --server --files \"dist/*\" \"index.html\"",
+    "webpack": "webpack -w --config ./webpack.config.dev.js",
+    "start": "npm-run-all --parallel sync webpack",
+    "build": "webpack -p --config ./webpack.config.prod.js"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "<rootDir>/config/preprocessor.js"
+    },
+    "testRegex": ".*\\.spec.(ts|tsx|js)$"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "classnames": "2.2.5",
+    "lodash": "4.17.2",
+    "react": "15.3.2",
+    "react-dom": "15.4.1"
+  },
+  "devDependencies": {
+    "@types/classnames": "0.0.32",
+    "@types/jasmine": "2.5.38",
+    "@types/lodash": "4.14.39",
+    "@types/react": "0.14.48",
+    "@types/react-dom": "0.14.18",
+    "autoprefixer": "6.5.3",
+    "browser-sync": "2.18.2",
+    "css-loader": "0.25.0",
+    "file-loader": "0.9.0",
+    "jasmine": "^2.4.1",
+    "node-sass": "3.10.1",
+    "npm-run-all": "3.1.1",
+    "postcss-loader": "1.0.0",
+    "resolve-url-loader": "1.6.0",
+    "sass-loader": "4.0.2",
+    "source-map-loader": "0.1.5",
+    "style-loader": "0.13.1",
+    "ts-loader": "1.2.1",
+    "typescript": "^2.0.10",
+    "url-loader": "0.5.7",
+    "webpack": "1.13.3"
+  }
+}
