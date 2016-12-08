@@ -1,23 +1,27 @@
 import * as React from 'react';
-import {MyNode} from "../model";
+import {MyNode, ChildState} from "../model";
 
 interface Props {
-    data: MyNode[]
+    data: MyNode[],
 }
 
 const selectedStyle = {
     fontWeight: 'bold'
 };
 
-export default (props: Props) => (<div>
+const loading = (n: MyNode) =>
+    n.childState == ChildState.loading ?
+        <small>loading...</small>: null;
+
+
+const tree = (props: Props) => (<div>
     <ul>
-        {props.data.map((n, i) => <li key={i}><span style={n.isSelected ? selectedStyle : {}}>{n.text}</span>
-
-
-            <ul>
-                <li>1.1</li>
-                <li>1.2</li>
-            </ul>
+        {props.data.map((n, i) => <li key={i}><span
+            style={n.isSelected ? selectedStyle : {}}>
+            {n.text} {loading(n)}</span>
+            {n.children ? tree({data: n.children}) : null}
         </li>)}
     </ul>
 </div>);
+
+export default tree;

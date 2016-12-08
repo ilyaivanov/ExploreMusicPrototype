@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import {reducer, MyNode, moveDown, moveUp} from './model';
+import {reducer, MyNode, moveUp, moveRightStart, ChildState, moveRightEnd, moveDown} from './model';
 
 describe('When none of the nodes are selected', () => {
     let initialState: MyNode[];
@@ -61,5 +61,25 @@ describe('When none of the nodes are selected', () => {
             expect(newNodes.filter(n => n.isSelected).length).toBe(1);
             expect(newNodes[0].isSelected).toBe(true);
         });
+    });
+});
+
+describe('When the first node is selected and contents have not been loaded', () => {
+    let initialState: MyNode[];
+    beforeEach(() => {
+        initialState = [
+            {id:'1', text: 'Root 1', isSelected: true},
+            {id:'2', text: 'Root 2'}
+        ];
+    });
+
+    it('on expand right node should first set to loading state', () => {
+        let newNodes = reducer(initialState, moveRightStart());
+
+        expect(newNodes[0].childState).toBe(ChildState.loading);
+
+        newNodes = reducer(newNodes, moveRightEnd('1'));
+
+        expect(newNodes[0].childState).toBe(undefined);
     });
 });
