@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import { MyNode, reducer, moveDown, moveUp, moveRightStart, moveRight } from './model';
+import { MyNode, newReducer, moveDown, moveUp, moveLeft, moveRightStart,moveRightEnd, moveRight } from './model';
 import Tree from './tree/Tree';
 
 let state: MyNode[] = [
@@ -17,22 +17,20 @@ function checkKey(e: KeyboardEvent) {
     e = e || window.event;
 
     if (e.keyCode == 38) {
-        state = reducer(state, moveUp());
+        state = newReducer(state, moveUp());
         render();
     }
     else if (e.keyCode == 40) {
-        state = reducer(state, moveDown());
+        state = newReducer(state, moveDown());
         render();
     }
     else if (e.keyCode == 37) {
-        //left
+        state = newReducer(state, moveLeft());
         render();
     }
     else if (e.keyCode == 39) {
-        moveRight((action) => {
-            state = reducer(state, action);
-            render();
-        }, () => state);
+        state = newReducer(state, moveRightEnd());
+        render();
     }
 
 }
