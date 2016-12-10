@@ -1,6 +1,9 @@
 import * as _ from 'lodash';
 
-import {reducer, MyNode, moveUp, moveRightStart, ChildState, moveRightEnd, moveDown} from './model';
+import {
+    reducer, MyNode, moveUp, moveRightStart, ChildState, moveRightEnd, moveRight, moveDown,
+    selectFirstSubnode
+} from './model';
 
 describe('When none of the nodes are selected', () => {
     let initialState: MyNode[];
@@ -65,21 +68,63 @@ describe('When none of the nodes are selected', () => {
 });
 
 describe('When the first node is selected and contents have not been loaded', () => {
-    let initialState: MyNode[];
+    let initialState: MyNode[]
     beforeEach(() => {
         initialState = [
-            {id:'1', text: 'Root 1', isSelected: true},
-            {id:'2', text: 'Root 2'}
+            {id: '1', text: 'Root 1', isSelected: true},
+            {id: '2', text: 'Root 2'}
+        ];
+    })
+
+    it('on expand right node should first set to loading state', () => {
+        let newNodes = reducer(initialState, moveRightStart())
+
+        expect(newNodes[0].childState).toBe(ChildState.loading)
+
+        newNodes = reducer(newNodes, moveRightEnd('1'))
+
+        expect(newNodes[0].childState).toBe(undefined)
+    })
+
+    describe('having a selected node with children', () => {
+        beforeEach(() => {
+            initialState[0].children = [
+                {id: '3', text: 'subnode'},
+                {id: '4', text: 'subnode'},
+            ]
+        });
+        describe('when navigating to the left', () => {
+            let navigatedToTheLeftState;
+            beforeEach(() => {
+                navigatedToTheLeftState = reducer(initialState, selectFirstSubnode('1'));
+            });
+            it('first subchild should be selected', () => {
+                expect(navigatedToTheLeftState[0].children[0].isSelected).toBe(true);
+                expect(navigatedToTheLeftState[0].isSelected).toBe(false);
+            })
+        })
+    })
+});
+
+
+describe('Having a selected subnode', () => {
+    let initialState: MyNode[]
+    beforeEach(() => {
+        initialState = [
+            {
+                id: '1', text: 'Root 1',
+                children: [
+                    {id: '3', text: 'sub', isSelected: true},
+                    {id: '4', text: 'sub'}
+                ]
+            },
+            {id: '2', text: 'Root 2'}
         ];
     });
 
-    it('on expand right node should first set to loading state', () => {
-        let newNodes = reducer(initialState, moveRightStart());
-
-        expect(newNodes[0].childState).toBe(ChildState.loading);
-
-        newNodes = reducer(newNodes, moveRightEnd('1'));
-
-        expect(newNodes[0].childState).toBe(undefined);
-    });
+    it('when moving down next subnode should be selected', () => {
+        const nextState = reducer(initialState, moveDown());
+        expect(nextState[0].children[0].isSelected).toBe(false);
+    })
 });
+

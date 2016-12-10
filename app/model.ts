@@ -38,24 +38,36 @@ export function reducer(state: MyNode[], action: Action) {
         return newState;
     } else if (action.type == 'MOVE_SELECTED_RIGHT_END') {
         const node = _.find(newState, n => n.id == action.id);
-         node.childState = undefined;
-         node.children = [{ id: '7', text: 'subnode' }, { id: '8', text: 'subnode' }];
+        node.childState = undefined;
+        node.children = [{id: '7', text: 'subnode'}, {id: '8', text: 'subnode'}];
+        return newState;
+    } else if (action.type == 'SELECT_FIRST_SUBNODE') {
+        const node = _.find(newState, n => n.id == action.id);
+        if (!node.children) {
+            throw new Error(`expected node ${node.text} to have children but found none`);
+        }
+        node.isSelected = false;
+        node.children[0].isSelected = true;
         return newState;
     }
     return newState;
 }
 
-export const moveDown = () => ({ type: 'MOVE_SELECTED_DOWN' });
-export const moveUp = () => ({ type: 'MOVE_SELECTED_UP' });
-export const moveRightStart = () => ({ type: 'MOVE_SELECTED_RIGHT_START' });
-export const moveRightEnd = (id: string) => ({ type: 'MOVE_SELECTED_RIGHT_END', id, payload: [{ text: 'child' }] });
+export const moveDown = () => ({type: 'MOVE_SELECTED_DOWN'});
+export const moveUp = () => ({type: 'MOVE_SELECTED_UP'});
+export const selectFirstSubnode = (id: string) => ({id, type: 'SELECT_FIRST_SUBNODE'});
+export const moveRightStart = () => ({type: 'MOVE_SELECTED_RIGHT_START'});
+export const moveRightEnd = (id: string) => ({type: 'MOVE_SELECTED_RIGHT_END', id, payload: [{text: 'child'}]});
 
 export const moveRight = (dispatch, getState: (() => MyNode[])) => {
     const selectedItem = _.find(getState(), n => n.isSelected);
 
-    dispatch(moveRightStart());
+    if (selectedItem.children)
+        dispatch(selectFirstSubnode(selectedItem.id));
+    else
+        dispatch(moveRightStart());
 
-    if (selectedItem != undefined)
+    if (selectedItem != undefined && !selectedItem.children)
         setTimeout(() => dispatch(moveRightEnd(selectedItem.id)), 500);
 };
 
