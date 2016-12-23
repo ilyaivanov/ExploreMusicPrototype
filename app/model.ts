@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import isUndefined = require("lodash/isUndefined");
 
 export interface MyNode {
     text: string,
@@ -33,7 +34,8 @@ export const moveRight = (dispatch, getState: (() => MyNode[])) => {
 };
 
 export enum ChildState {
-    loading
+    loading,
+    hidden
 }
 
 
@@ -64,13 +66,23 @@ export function newReducer(state: MyNode[], action: Action) {
         return newState;
     }
     if (action.type == 'MOVE_SELECTED_LEFT') {
-        allNodes[selectedIndex].isSelected = false;
+        if (allNodes[selectedIndex].childState == ChildState.hidden) {
+            const parent = allNodes.find(n => _.find(n.children, child => child.id == allNodes[selectedIndex].id));
+            if (parent) {
+                allNodes[selectedIndex].isSelected = false;
+                parent.isSelected = true;
+            }
+        } else {
+            allNodes[selectedIndex].childState = ChildState.hidden;
+        }
 
-        const parent = allNodes.find(n => _.find(n.children, child => child.id == allNodes[selectedIndex].id))
-        parent.isSelected = true;
         return newState;
     }
     if (action.type == 'MOVE_SELECTED_RIGHT_END') {
+        if (allNodes[selectedIndex].childState == ChildState.hidden) {
+            allNodes[selectedIndex].childState = undefined;
+            return newState;
+        }
         if (!allNodes[selectedIndex].children) {
             allNodes[selectedIndex].children = [{id: ('' + id++), text: 'subnode'}, {id: ('' + id++), text: 'subnode'}];
         }

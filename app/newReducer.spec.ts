@@ -35,17 +35,22 @@ describe('Having a nested list of nodes', () => {
     });
 
     describe('when second node is selected', () => {
-        it('moving left should collapse it', () => {
+        it('moving left should do nothing', () => {
             nodes[1].isSelected = true;
-            const newState = newReducer(nodes, moveRight());
+            const newState = newReducer(nodes, moveLeft());
             expect(newState[1].isSelected)
                 .toBe(true);
             expect(newState[1].childState == ChildState.hidden)
                 .toBe(true);
 
-        });
-    });
+            newState = newReducer(newState, moveRightEnd('2'));
+            expect(newState[1].isSelected)
+                .toBe(true);
+            expect(newState[1].childState)
+                .toBe(undefined);
 
+        });
+    })
     describe('when last child is selected ', () => {
         beforeEach(() => {
             nodes[1].children[1].children[1].isSelected = true;
